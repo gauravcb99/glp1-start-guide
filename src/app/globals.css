@@ -3,6 +3,7 @@
 /* Theme tokens. Dark follows the OS setting, as before. Chart colors follow the dataviz
    reference palette: one series (blue) plus recessive neutrals; text never wears series color. */
 :root {
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #171717;
   --surface: #f6f6f4;
@@ -33,6 +34,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
     --background: #0a0a0a;
     --foreground: #ededed;
     --surface: #161615;
@@ -52,4 +54,20 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Native form controls follow the theme (date pickers, select menus), and empty or placeholder
+   text stays readable on the dark background. */
+input,
+select,
+textarea {
+  color-scheme: inherit;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  color: var(--text-secondary);
 }

@@ -203,6 +203,7 @@ export const strings = {
       date: "Dates need to look like 2026-03-04.",
       mg: "Each dose step needs an amount above zero.",
       firstWeekday: "The first injection day must match the weekday of your first dose date.",
+      startingDose: "Please add your starting dose. Its date is filled in from your first dose date.",
     },
   },
 
