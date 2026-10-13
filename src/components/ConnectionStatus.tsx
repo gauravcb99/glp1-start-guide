@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { strings } from "@/copy/strings";
+import { queuedFetch } from "@/lib/whoop/browserQueue";
 
 type Status = "loading" | "connected" | "notConnected";
 
@@ -16,7 +17,7 @@ export function ConnectionStatus() {
     let cancelled = false;
     const connectFailed = new URLSearchParams(window.location.search).get("connect") === "failed";
 
-    fetch("/api/auth/status", { cache: "no-store" })
+    queuedFetch("/api/auth/status")
       .then((res) => (res.ok ? res.json() : { connected: false }))
       .catch(() => ({ connected: false }))
       .then((body: { connected?: boolean }) => {

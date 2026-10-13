@@ -62,5 +62,5 @@ export const analysisConfig: AnalysisConfig = {
   clearPatternRule: null,
   metricsShown: null,
   rollingWindowDays: null,
-  historyDaysToFetch: null,
+  historyDaysToFetch: 365, // set by Prakhar, 2026-10-12
 };
