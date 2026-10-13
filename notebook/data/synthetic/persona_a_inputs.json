@@ -1,0 +1,40 @@
+{
+  "synthetic": true,
+  "persona": "A",
+  "seed": 42,
+  "inputs": {
+    "drug": "semaglutide",
+    "firstDoseDate": "2026-03-04",
+    "injectionWeekdays": [
+      {
+        "from": "2026-03-04",
+        "weekday": 3
+      }
+    ],
+    "missedInjectionDates": [],
+    "movedInjections": [],
+    "injectionTime": "morning",
+    "doseSteps": [
+      {
+        "date": "2026-03-04",
+        "mg": 0.25
+      },
+      {
+        "date": "2026-04-01",
+        "mg": 0.5
+      },
+      {
+        "date": "2026-04-29",
+        "mg": 1
+      },
+      {
+        "date": "2026-05-27",
+        "mg": 1.7
+      },
+      {
+        "date": "2026-06-24",
+        "mg": 2.4
+      }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "synthetic": true,
+  "persona": "B",
+  "seed": 42,
+  "inputs": {
+    "drug": "tirzepatide",
+    "firstDoseDate": "2026-03-09",
+    "injectionWeekdays": [
+      {
+        "from": "2026-03-09",
+        "weekday": 1
+      }
+    ],
+    "missedInjectionDates": [],
+    "movedInjections": [],
+    "injectionTime": "evening",
+    "doseSteps": [
+      {
+        "date": "2026-03-09",
+        "mg": 2.5
+      },
+      {
+        "date": "2026-04-06",
+        "mg": 5
+      },
+      {
+        "date": "2026-05-04",
+        "mg": 7.5
+      },
+      {
+        "date": "2026-06-01",
+        "mg": 10
+      },
+      {
+        "date": "2026-06-29",
+        "mg": 12.5
+      },
+      {
+        "date": "2026-07-27",
+        "mg": 15
+      }
+    ]
+  }
+}
