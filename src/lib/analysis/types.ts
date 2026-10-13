@@ -39,31 +39,68 @@ export type MemberInputs = {
   doseSteps: { date: string; mg: number }[];
 };
 
-/** Pre-drug mean per metric per weekday; null where there is not enough pre-drug data. */
-export type WeekdayMeans = Record<Metric, Record<Weekday, number | null>>;
+/** A metric value on one wake morning. */
+export type DayValue = { date: string; value: number | null };
 
 /** Day-since-injection, 0-based. */
 export type DaySinceInjection = number;
 
+export type View = "raw" | "adjusted";
+
+export type Interval = { lower: number; upper: number };
+
+export type ProfileStatus = "ok" | "notEnoughPreDrugData" | "notEnoughCycles";
+
 export type ProfilePoint = {
   d: DaySinceInjection;
-  estimate: number;
-  lower: number;
-  upper: number;
+  /** Mean of within-cycle centred values at d; null if no cycle has data at d. */
+  estimate: number | null;
+  /** Interval shown on screen, at uncertaintyMethod.level. */
+  band: Interval | null;
+  /** Interval used for the clear-pattern decision, at the corrected level. */
+  decision: Interval | null;
+  /** Standard error of the estimate. */
+  se: number | null;
+  /** t intervals only: variance from resampling cycles and from resampling pre-drug weeks (each scaled by n/(n − 1)). */
+  variance: { cycles: number; preWeeks: number } | null;
+  /** t intervals only: degrees of freedom used for the t quantile. */
+  df: number | null;
 };
 
 export type Profile = {
   metric: Metric;
-  view: "raw" | "adjusted";
+  view: View;
+  status: ProfileStatus;
+  /** Cycles that passed every rule; the unit of the bootstrap. */
   cycles: number;
   points: ProfilePoint[];
+  /** Days whose decision interval excludes zero. */
+  clearDays: DaySinceInjection[];
+  clearPattern: boolean;
+  bandLevel: number;
+  decisionLevel: number;
+  /** Bootstrap replicates discarded because a resampled weekday had no pre-drug data. */
+  discardedResamples: number;
+};
+
+export type WeekAnalysis = {
+  view: View;
+  profiles: Profile[];
+  /** True if any shown metric has a clear pattern. */
   clearPattern: boolean;
 };
 
-export type LongViewPoint = { date: string; rollingAdjusted: number | null };
+export type LongViewPoint = {
+  date: string;
+  /** Trailing mean of a_t, or null when the window has fewer than rollingMinDays valid days. */
+  rollingAdjusted: number | null;
+  /** Valid days in the window. */
+  n: number;
+};
 
 export type LongView = {
   metric: Metric;
+  status: "ok" | "notEnoughPreDrugData";
   points: LongViewPoint[];
   doseSteps: { date: string; mg: number }[];
 };

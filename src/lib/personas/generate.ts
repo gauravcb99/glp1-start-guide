@@ -1,6 +1,7 @@
 import { requireConfig } from "@/config/errors";
 import type { PersonaConfig, PersonaId, PersonaSpec, WeekdayName } from "@/config/personas";
 import type { DailyRow, MemberInputs, Metric, Weekday } from "@/lib/analysis/types";
+import { mulberry32 } from "@/lib/random";
 
 // Synthetic members, driven only by PersonaConfig. Pure and seeded: same inputs, same output.
 
@@ -137,15 +138,4 @@ function firstOnOrAfter(ms: number, weekday: Weekday): number {
 
 function ymd(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10);
-}
-
-/** Small, fast, seedable PRNG returning floats in [0, 1). */
-function mulberry32(seed: number): () => number {
-  let a = seed;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
 }

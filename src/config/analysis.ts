@@ -26,9 +26,22 @@ export type AnalysisConfig = {
   missedInjectionRule: "dropCycle" | "extendCycle" | null;
   /** WHOOP calibration days. */
   calibratingRule: "exclude" | "keep" | null;
-  /** Interval around P(d). Cycles are the unit either way. */
+  /**
+   * Interval around P(d). Cycles are the unit either way.
+   * interval: "percentile" uses percentiles of the joint bootstrap. The two t options build
+   * estimate ± t × SE, where SE² = V_cycles + V_preWeeks (each from a bootstrap that resamples
+   * only that unit) and the t degrees of freedom combine (cycles − 1) and (pre-drug weeks − 1)
+   * by Welch–Satterthwaite ("tWelchSatterthwaite") or are min(cycles, pre-drug weeks) − 1
+   * ("tMinDf"). See docs/methods-intervals.md.
+   */
   uncertaintyMethod:
-    | { kind: "bootstrapCycles"; resamples: number; seed: number; level: number }
+    | {
+        kind: "bootstrapCycles";
+        resamples: number;
+        seed: number;
+        level: number;
+        interval: "percentile" | "tWelchSatterthwaite" | "tMinDf";
+      }
     | { kind: "standardErrorCycles"; level: number }
     | null;
   /**
@@ -43,6 +56,10 @@ export type AnalysisConfig = {
   metricsShown: Metric[] | null;
   /** Long-view smoothing. */
   rollingWindowDays: number | null;
+  /** Fewest valid days in a rolling window needed to show a value. */
+  rollingMinDays: number | null;
+  /** Rolling window alignment. trailing: the value on date t averages [t − (window − 1), t]. */
+  rollingAlignment: "trailing" | "centered" | null;
   /** Days pulled from WHOOP. Must cover the pre-drug window plus the period since starting. */
   historyDaysToFetch: number | null;
 };
@@ -62,12 +79,24 @@ export const analysisConfig: AnalysisConfig = {
   calibratingRule: "exclude",
   // The bootstrap resamples whole injection weeks AND pre-drug weeks, so the error in the
   // pre-drug weekday means (shared by every cycle, since d and weekday are aligned) is carried through.
-  uncertaintyMethod: { kind: "bootstrapCycles", resamples: 10000, seed: 1, level: 0.95 },
+  // interval chosen by Prakhar 2026-10-13, for both the 95% bands and the decision interval.
+  // Percentile gave false-pattern rates of 14/100 (null) and 31/100 (placebo); Welch–Satterthwaite
+  // reached the 0.10 limit at 8 placebo cycles, and the app allows as few as minCycles = 6.
+  // A false "clear pattern" is worse than a missed one. Comparison: docs/methods-intervals.md.
+  uncertaintyMethod: {
+    kind: "bootstrapCycles",
+    resamples: 10000,
+    seed: 1,
+    level: 0.95,
+    interval: "tMinDf",
+  },
   // Bonferroni across days and metrics: the "clear pattern" decision uses intervals at
   // level 1 - 0.05 / (7 × metricsShown.length), i.e. 1 - 0.05 / 28 ≈ 0.99821 with 4 metrics.
   // The displayed bands stay at uncertaintyMethod.level (95%).
   clearPatternRule: { minDaysIntervalExcludesZero: 1, correction: "acrossDaysAndMetrics" },
   metricsShown: ["restingHr", "hrvMs", "recovery", "sleepPerformance"],
   rollingWindowDays: 14,
+  rollingMinDays: 10,
+  rollingAlignment: "trailing",
   historyDaysToFetch: 365,
 };
