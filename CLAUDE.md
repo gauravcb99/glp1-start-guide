@@ -80,7 +80,7 @@ Client pages that use localStorage (`setup`, `week`, `since`, `demo`) are client
 ```
 WHOOP_CLIENT_ID=
 WHOOP_CLIENT_SECRET=
-WHOOP_REDIRECT_URI=http://localhost:3000/api/auth/callback
+WHOOP_REDIRECT_URI=https://localhost:3000/api/auth/callback
 SESSION_SECRET=            # 32+ random characters
 ```
 
@@ -183,7 +183,7 @@ Footer on every page: "For general wellness and education. Not medical advice."
 
 ## Commands
 
-- `npm run dev` (localhost:3000)
+- `npm run dev` (https://localhost:3000, self-signed certificate via `--experimental-https`)
 - `npm test` (`vitest run`)
 - `npm run personas` (`tsx scripts/generate-personas.ts`)
 - `npm run export-results` (`tsx scripts/export-engine-results.ts`)
