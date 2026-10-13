@@ -47,20 +47,27 @@ export type AnalysisConfig = {
   historyDaysToFetch: number | null;
 };
 
+// All values below set by Prakhar, 2026-10-12.
 export const analysisConfig: AnalysisConfig = {
-  preDrugWindow: null,
-  minPreDrugWeeksPerWeekday: null,
-  minCycles: null,
-  excludeWeeksAfterStart: null,
-  excludeWeeksAfterDoseStep: null,
-  dayZeroRule: null,
-  minDaysPerCycle: null,
-  irregularCycleRule: null,
-  missedInjectionRule: null,
-  calibratingRule: null,
-  uncertaintyMethod: null,
-  clearPatternRule: null,
-  metricsShown: null,
-  rollingWindowDays: null,
-  historyDaysToFetch: 365, // set by Prakhar, 2026-10-12
+  preDrugWindow: { kind: "lastWeeks", weeks: 12 },
+  minPreDrugWeeksPerWeekday: 6,
+  minCycles: 6,
+  excludeWeeksAfterStart: 0,
+  excludeWeeksAfterDoseStep: 0,
+  // d = 0 is the first wake-up after the dose, for both morning and evening injections.
+  dayZeroRule: { morning: 1, evening: 1 },
+  minDaysPerCycle: 5,
+  irregularCycleRule: "drop",
+  missedInjectionRule: "dropCycle",
+  calibratingRule: "exclude",
+  // The bootstrap resamples whole injection weeks AND pre-drug weeks, so the error in the
+  // pre-drug weekday means (shared by every cycle, since d and weekday are aligned) is carried through.
+  uncertaintyMethod: { kind: "bootstrapCycles", resamples: 10000, seed: 1, level: 0.95 },
+  // Bonferroni across days and metrics: the "clear pattern" decision uses intervals at
+  // level 1 - 0.05 / (7 × metricsShown.length), i.e. 1 - 0.05 / 28 ≈ 0.99821 with 4 metrics.
+  // The displayed bands stay at uncertaintyMethod.level (95%).
+  clearPatternRule: { minDaysIntervalExcludesZero: 1, correction: "acrossDaysAndMetrics" },
+  metricsShown: ["restingHr", "hrvMs", "recovery", "sleepPerformance"],
+  rollingWindowDays: 14,
+  historyDaysToFetch: 365,
 };
