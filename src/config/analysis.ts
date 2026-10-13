@@ -32,7 +32,7 @@ export type AnalysisConfig = {
     | { kind: "standardErrorCycles"; level: number }
     | null;
   /**
-   * When the app says "clear pattern". Shape is provisional; confirm before Phase 4.
+   * When the app says "clear pattern".
    * correction: how the interval is widened for the number of days and metrics tested.
    */
   clearPatternRule: {
