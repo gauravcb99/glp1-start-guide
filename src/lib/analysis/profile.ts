@@ -51,21 +51,9 @@ export function computeProfile(
 
   const base = { metric, view, bandLevel, decisionLevel: decisionLvl };
 
-  // Weekday means (zeros in the raw view) and the pre-drug weeks the bootstrap resamples.
-  let means = new Float64Array(DAYS);
-  let preWeeks: (number | null)[][] = [];
-  if (view === "adjusted") {
-    const baseline = preDrugWeekdayMeans(rows, inputs, metric, cfg);
-    if (baseline.status !== "ok") return emptyProfile(base, "notEnoughPreDrugData", 0);
-    means = Float64Array.from(baseline.means as number[]);
-    preWeeks = baseline.weeks;
-  }
-
-  // Cycles hold raw x so each bootstrap replicate can re-adjust with its own weekday means.
-  const { cycles } = buildCycles(metricValues(rows, metric, cfg), inputs, cfg);
-  const packed = cycles.map(pack);
-  const estimate = new Float64Array(DAYS);
-  profileInto(packed, null, means, estimate);
+  const prepared = prepare(rows, inputs, metric, view, cfg);
+  if (prepared.status !== "ok") return emptyProfile(base, prepared.status, 0);
+  const { means, preWeeks, packed, estimate } = prepared;
 
   if (packed.length < minCycles) {
     return {
@@ -145,6 +133,57 @@ export function computeProfile(
     clearDays,
     clearPattern: clearDays.length >= rule.minDaysIntervalExcludesZero,
     discardedResamples: discarded,
+  };
+}
+
+type Prepared =
+  | { status: "notEnoughPreDrugData" }
+  | {
+      status: "ok";
+      /** Weekday means (zeros in the raw view). */
+      means: Float64Array;
+      /** Pre-drug weeks the bootstrap resamples (empty in the raw view). */
+      preWeeks: (number | null)[][];
+      /** Cycles hold raw x so each bootstrap replicate can re-adjust with its own weekday means. */
+      packed: PackedCycle[];
+      estimate: Float64Array;
+    };
+
+/** Steps 1–5 without uncertainty: weekday means, cycles, centering and the P(d) point estimate. */
+function prepare(rows: DailyRow[], inputs: MemberInputs, metric: Metric, view: View, cfg: AnalysisConfig): Prepared {
+  let means = new Float64Array(DAYS);
+  let preWeeks: (number | null)[][] = [];
+  if (view === "adjusted") {
+    const baseline = preDrugWeekdayMeans(rows, inputs, metric, cfg);
+    if (baseline.status !== "ok") return { status: "notEnoughPreDrugData" };
+    means = Float64Array.from(baseline.means as number[]);
+    preWeeks = baseline.weeks;
+  }
+  const { cycles } = buildCycles(metricValues(rows, metric, cfg), inputs, cfg);
+  const packed = cycles.map(pack);
+  const estimate = new Float64Array(DAYS);
+  profileInto(packed, null, means, estimate);
+  return { status: "ok", means, preWeeks, packed, estimate };
+}
+
+/**
+ * The engine's P(d) point estimate with no bootstrap, for simulations that need many runs
+ * (the detectability table). Same steps and config as computeProfile.
+ */
+export function pointEstimate(
+  rows: DailyRow[],
+  inputs: MemberInputs,
+  metric: Metric,
+  view: View,
+  cfg: AnalysisConfig,
+): { status: "ok" | "notEnoughPreDrugData"; estimate: (number | null)[]; cycles: number; preWeeks: number } {
+  const prepared = prepare(rows, inputs, metric, view, cfg);
+  if (prepared.status !== "ok") return { status: prepared.status, estimate: [], cycles: 0, preWeeks: 0 };
+  return {
+    status: "ok",
+    estimate: Array.from(prepared.estimate, (x) => (Number.isNaN(x) ? null : x)),
+    cycles: prepared.packed.length,
+    preWeeks: prepared.preWeeks.length,
   };
 }
 

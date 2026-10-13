@@ -9,7 +9,7 @@ Next.js version-specific guidance: see AGENTS.md.
 ## Hard rules (never break these)
 
 1. **Never hardcode or guess analysis parameters.** Every value that changes results lives in `src/config/analysis.ts` or `src/config/personas.ts` and starts as `null`. If you need a value that isn't set, stop and ask Prakhar. Do not pick a "reasonable default."
-2. **No storage of WHOOP data.** No database, no files, no KV, no caching beyond the single request. Every fetch to WHOOP uses `cache: 'no-store'`; routes that touch WHOOP export `dynamic = 'force-dynamic'` and respond with `Cache-Control: no-store`. WHOOP's API terms forbid databases or permanent copies of WHOOP data.
+2. **No storage of WHOOP data.** No database, no files, no KV, no server cache beyond the single request. The browser may hold fetched rows in memory (React state) for the session to draw charts; never in localStorage, sessionStorage, IndexedDB or cookies, and they are gone on reload. Every fetch to WHOOP uses `cache: 'no-store'`; routes that touch WHOOP export `dynamic = 'force-dynamic'` and respond with `Cache-Control: no-store`. WHOOP's API terms forbid databases or permanent copies of WHOOP data.
 3. **Never log WHOOP response bodies or tokens.** Log status codes and endpoint names only.
 4. **Client secret stays server-side.** Read `WHOOP_CLIENT_SECRET` only in route handlers or server-only modules. Never prefix it with `NEXT_PUBLIC_`.
 5. **No language model sees member data.** The app never sends member data to any AI API. You (Claude Code) must not call `/api/whoop/days`, open `/debug`, or read files in `notebook/data/export/` beyond their header line. Prakhar runs anything that touches his real data.
@@ -92,7 +92,7 @@ SESSION_SECRET=            # 32+ random characters
 - Scopes: `offline read:recovery read:cycles read:sleep`. `offline` is required to get a refresh token.
 - Token endpoint: `POST https://api.prod.whoop.com/oauth/oauth2/token`.
   - Code exchange: `grant_type=authorization_code`, `code`, `client_id`, `client_secret`, `redirect_uri`. WHOOP's docs don't state the body format; a working public script uses `application/x-www-form-urlencoded`.
-  - Refresh: `grant_type=refresh_token`, `refresh_token`, `client_id`, `client_secret`, `scope=offline` (docs show a JSON body).
+  - Refresh: `grant_type=refresh_token`, `refresh_token`, `client_id`, `client_secret`, `scope=offline` (docs show a JSON body, but in testing on 2026-10-13 the endpoint returned 400 for JSON and 200 for `application/x-www-form-urlencoded`; form is sent first, JSON is the fallback).
   - If one format is rejected, try the other and report the status code.
 - Access tokens last about an hour (`expires_in`, sample 3600). Refreshing invalidates the old token, so save the newest refresh token in the session. Refresh only inside route handlers (Server Components can't set cookies), at most once per request.
 - Data base URL: `https://api.prod.whoop.com/developer`

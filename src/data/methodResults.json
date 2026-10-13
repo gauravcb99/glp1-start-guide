@@ -1,0 +1,137 @@
+{
+  "synthetic": true,
+  "seed": 42,
+  "testSeedCount": 100,
+  "maxFalsePatternRate": 0.1,
+  "selfTests": {
+    "planted": [
+      {
+        "metric": "restingHr",
+        "maxErrorInNoiseSd": 0.6144947427356274,
+        "toleranceInNoiseSd": 1
+      },
+      {
+        "metric": "hrvMs",
+        "maxErrorInNoiseSd": 0.40329744277449747,
+        "toleranceInNoiseSd": 1
+      },
+      {
+        "metric": "recovery",
+        "maxErrorInNoiseSd": 0.3769723856065954,
+        "toleranceInNoiseSd": 1
+      },
+      {
+        "metric": "sleepPerformance",
+        "maxErrorInNoiseSd": 0.3695986411388422,
+        "toleranceInNoiseSd": 1
+      }
+    ],
+    "null": {
+      "clear": 1,
+      "runs": 100
+    },
+    "placebo": {
+      "clear": 1,
+      "runs": 100
+    },
+    "weekdayTrap": {
+      "habitD": 0,
+      "rawClearAtHabitDay": true,
+      "adjustedClear": false
+    }
+  },
+  "mde": {
+    "runs": 2000,
+    "decisionLevel": 0.9982142857142857,
+    "interval": "tMinDf",
+    "rows": [
+      {
+        "metric": "restingHr",
+        "noiseSd": 3,
+        "se": 0.9725696089264525,
+        "seAnalytic": 0.9487850135274469,
+        "df": 11,
+        "critical": 4.091255992108472,
+        "mde50": 3.979031240262942,
+        "mde80": 4.8305450886414665,
+        "cycles": 29.9775,
+        "preWeeks": 12
+      },
+      {
+        "metric": "hrvMs",
+        "noiseSd": 10,
+        "se": 3.2537601219534875,
+        "seAnalytic": 3.1626167117581567,
+        "df": 11,
+        "critical": 4.091255992108472,
+        "mde50": 13.311965595825798,
+        "mde80": 16.160730124056816,
+        "cycles": 29.9775,
+        "preWeeks": 12
+      },
+      {
+        "metric": "recovery",
+        "noiseSd": 12,
+        "se": 3.8762522465173266,
+        "seAnalytic": 3.7951400541097877,
+        "df": 11,
+        "critical": 4.091255992108472,
+        "mde50": 15.858740230487939,
+        "mde80": 19.252515274889387,
+        "cycles": 29.9775,
+        "preWeeks": 12
+      },
+      {
+        "metric": "sleepPerformance",
+        "noiseSd": 8,
+        "se": 2.625602258510444,
+        "seAnalytic": 2.5300933694065253,
+        "df": 11,
+        "critical": 4.091255992108472,
+        "mde50": 10.742010973024392,
+        "mde80": 13.0408044608483,
+        "cycles": 29.9775,
+        "preWeeks": 12
+      }
+    ]
+  },
+  "config": {
+    "preDrugWindow": {
+      "kind": "lastWeeks",
+      "weeks": 12
+    },
+    "minPreDrugWeeksPerWeekday": 6,
+    "minCycles": 6,
+    "excludeWeeksAfterStart": 0,
+    "excludeWeeksAfterDoseStep": 0,
+    "dayZeroRule": {
+      "morning": 1,
+      "evening": 1
+    },
+    "minDaysPerCycle": 5,
+    "irregularCycleRule": "drop",
+    "missedInjectionRule": "dropCycle",
+    "calibratingRule": "exclude",
+    "uncertaintyMethod": {
+      "kind": "bootstrapCycles",
+      "resamples": 10000,
+      "seed": 1,
+      "level": 0.95,
+      "interval": "tMinDf"
+    },
+    "clearPatternRule": {
+      "minDaysIntervalExcludesZero": 1,
+      "correction": "acrossDaysAndMetrics"
+    },
+    "metricsShown": [
+      "restingHr",
+      "hrvMs",
+      "recovery",
+      "sleepPerformance"
+    ],
+    "rollingWindowDays": 14,
+    "rollingMinDays": 10,
+    "rollingAlignment": "trailing",
+    "historyDaysToFetch": 365
+  }
+}

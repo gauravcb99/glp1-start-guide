@@ -1,13 +1,32 @@
 @import "tailwindcss";
 
+/* Theme tokens. Dark follows the OS setting, as before. Chart colors follow the dataviz
+   reference palette: one series (blue) plus recessive neutrals; text never wears series color. */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --surface: #f6f6f4;
+  --border: #e4e3df;
+  --text-secondary: #52514e;
+  --text-muted: #6f6e69;
+  --series-1: #2a78d6;
+  --series-muted: #a3a29c;
+  --reference-fill: #8a8984;
+  --grid: #e4e3df;
+  --badge-bg: #fdf1d8;
+  --badge-text: #6b4a00;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-series: var(--series-1);
+  --color-badge: var(--badge-bg);
+  --color-badge-text: var(--badge-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,11 +35,21 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --surface: #161615;
+    --border: #2b2b29;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e88;
+    --series-1: #3987e5;
+    --series-muted: #6b6a66;
+    --reference-fill: #8a8984;
+    --grid: #2b2b29;
+    --badge-bg: #3a2e10;
+    --badge-text: #f5d58a;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }

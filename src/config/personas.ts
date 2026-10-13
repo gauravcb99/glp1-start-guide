@@ -60,6 +60,8 @@ export type PersonaConfig = {
   maxFalsePatternRate: number | null;
   /** Allowed error per day when recovering persona A's profile on the main seed, as a multiple of that metric's noiseSd. */
   recoveryToleranceNoiseSdMultiple: number | null;
+  /** Simulated persona-B runs behind the Method page's detectability table (seeds 1..N). */
+  mdeSeedCount: number | null;
   personas: Record<PersonaId, PersonaSpec> | null;
 };
 
@@ -80,6 +82,7 @@ export const personaConfig: PersonaConfig = {
   placeboStartOffsetWeeks: 14,
   maxFalsePatternRate: 0.1,
   recoveryToleranceNoiseSdMultiple: 1.0,
+  mdeSeedCount: 2000, // set by Prakhar 2026-10-13: converged figure (100 runs read 8-26% high)
   personas: {
     // Planted pattern.
     A: {

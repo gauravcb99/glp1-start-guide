@@ -1,16 +1,9 @@
 "use client";
 
 // Dev-only tool, never shown in production, so its labels live here rather than in strings.ts.
-import { useEffect, useState } from "react";
-import { analysisConfig } from "@/config/analysis";
-import { requireConfig } from "@/config/errors";
+import { useEffect } from "react";
+import { useWhoopData } from "@/components/WhoopDataProvider";
 import type { DailyRow } from "@/lib/analysis/types";
-import { queuedFetch } from "@/lib/whoop/browserQueue";
-
-type State =
-  | { kind: "loading" }
-  | { kind: "error"; message: string }
-  | { kind: "ready"; start: string; end: string; rows: DailyRow[] };
 
 const COLUMNS: (keyof DailyRow)[] = [
   "date",
@@ -25,47 +18,20 @@ const COLUMNS: (keyof DailyRow)[] = [
   "calibrating",
 ];
 
+/** Reads the session's rows from WhoopDataProvider, so a page load makes at most one request. */
 export function DebugTable() {
-  let historyDays: number | null = null;
-  let configError: string | null = null;
-  try {
-    historyDays = requireConfig(analysisConfig, "historyDaysToFetch");
-  } catch (err) {
-    configError = (err as Error).message;
-  }
-
-  const [state, setState] = useState<State>({ kind: "loading" });
+  const { state, ensureLoaded, refresh } = useWhoopData();
 
   useEffect(() => {
-    if (historyDays === null) return;
-    let cancelled = false;
+    ensureLoaded();
+  }, [ensureLoaded]);
 
-    const today = new Date();
-    const end = localYmd(today);
-    const start = localYmd(new Date(today.getFullYear(), today.getMonth(), today.getDate() - historyDays));
-
-    queuedFetch(`/api/whoop/days?start=${start}&end=${end}`)
-      .then(async (res) => {
-        const body = await res.json().catch(() => null);
-        if (cancelled) return;
-        if (!res.ok) {
-          setState({ kind: "error", message: `HTTP ${res.status}${body ? ` ${JSON.stringify(body)}` : ""}` });
-          return;
-        }
-        setState({ kind: "ready", start, end, rows: body as DailyRow[] });
-      })
-      .catch(() => {
-        if (!cancelled) setState({ kind: "error", message: "Network error" });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [historyDays]);
-
-  if (configError) return <p className="text-sm text-red-700">{configError}</p>;
-  if (state.kind === "loading") return <p className="text-sm text-zinc-500">Loading WHOOP rows…</p>;
-  if (state.kind === "error") return <p className="text-sm text-red-700">{state.message}</p>;
+  if (state.status === "idle" || state.status === "loading") {
+    return <p className="text-sm text-muted">Loading WHOOP rows…</p>;
+  }
+  if (state.status === "notConnected") return <p className="text-sm text-red-500">HTTP 401: not connected</p>;
+  if (state.status === "error") return <p className="text-sm text-red-500">HTTP {state.httpStatus}</p>;
+  if (state.status !== "ready") return null;
 
   const counts = new Map<string, number>();
   for (const row of state.rows) counts.set(row.date, (counts.get(row.date) ?? 0) + 1);
@@ -75,7 +41,10 @@ export function DebugTable() {
     <div className="flex flex-col gap-4">
       <p className="text-sm">
         {state.rows.length} rows, {state.start} to {state.end}. Duplicate dates: {duplicates}
-        {duplicates > 0 && " (highlighted)"}.
+        {duplicates > 0 && " (highlighted)"}.{" "}
+        <button type="button" onClick={refresh} className="underline">
+          Refetch
+        </button>
       </p>
       <div className="overflow-x-auto">
         <table className="text-left font-mono text-xs">
@@ -92,7 +61,7 @@ export function DebugTable() {
             {state.rows.map((row) => (
               <tr
                 key={`${row.date}-${row.cycleId}`}
-                className={(counts.get(row.date) ?? 0) > 1 ? "bg-amber-100" : undefined}
+                className={(counts.get(row.date) ?? 0) > 1 ? "bg-amber-500/30" : undefined}
               >
                 {COLUMNS.map((col) => (
                   <td key={col} className="border-b px-2 py-1">
@@ -106,9 +75,4 @@ export function DebugTable() {
       </div>
     </div>
   );
-}
-
-function localYmd(d: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }

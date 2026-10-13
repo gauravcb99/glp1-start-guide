@@ -94,7 +94,8 @@ export function refreshTokens(params: {
   clientId: string;
   clientSecret: string;
 }): Promise<TokenSet> {
-  // WHOOP's docs show a JSON body for refresh.
+  // WHOOP's docs show a JSON body, but in testing (2026-10-13) the endpoint returned 400 for JSON
+  // and 200 for form encoding, so form goes first and JSON is the fallback.
   return postToken(
     "token refresh",
     {
@@ -104,7 +105,7 @@ export function refreshTokens(params: {
       client_secret: params.clientSecret,
       scope: "offline",
     },
-    "json",
+    "form",
   );
 }
 

@@ -6,12 +6,12 @@ import { ConfigNotSetError } from "@/config/errors";
 import { personaConfig } from "@/config/personas";
 import { adjustValues } from "@/lib/analysis/adjust";
 import { buildCycles } from "@/lib/analysis/cycles";
-import { addDays } from "@/lib/analysis/dates";
 import { computeLongView } from "@/lib/analysis/longView";
 import { analyzeWeek, computeProfile } from "@/lib/analysis/profile";
 import type { Metric } from "@/lib/analysis/types";
 import { preDrugWeekdayMeans } from "@/lib/analysis/weekday";
 import { generatePersona, weekdayIndex } from "@/lib/personas/generate";
+import { placeboCase } from "@/lib/personas/placebo";
 
 const cfg = analysisConfig;
 const personas = personaConfig.personas!;
@@ -84,16 +84,7 @@ describe("self-test: placebo date", () => {
     () => {
       let clear = 0;
       for (const s of testSeeds) {
-        const { rows, inputs } = generatePersona(personaConfig, "B", s);
-        const historyStart = addDays(inputs.firstDoseDate, -personaConfig.firstDoseOffsetDays!);
-        const fakeStart = addDays(historyStart, 7 * personaConfig.placeboStartOffsetWeeks!);
-        const preDrugRows = rows.filter((r) => r.date < inputs.firstDoseDate);
-        const placeboInputs = {
-          ...inputs,
-          firstDoseDate: fakeStart,
-          injectionWeekdays: [{ from: fakeStart, weekday: inputs.injectionWeekdays[0].weekday }],
-          doseSteps: [],
-        };
+        const { rows: preDrugRows, inputs: placeboInputs } = placeboCase(personaConfig, "B", s);
         const result = analyzeWeek(preDrugRows, placeboInputs, "adjusted", cfg);
         expect(result.profiles.every((p) => p.status === "ok")).toBe(true); // history covers both windows
         if (result.clearPattern) clear++;

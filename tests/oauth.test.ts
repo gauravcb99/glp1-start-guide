@@ -115,14 +115,14 @@ describe("token endpoint body format", () => {
     expect(contentTypes()).toEqual(["application/x-www-form-urlencoded", "application/json"]);
   });
 
-  it("refreshes with a JSON body first and falls back to form on 415", async () => {
-    fetchMock.mockResolvedValueOnce(fail(415)).mockResolvedValueOnce(ok());
+  it("refreshes with a form body first and falls back to JSON on 400", async () => {
+    fetchMock.mockResolvedValueOnce(fail(400)).mockResolvedValueOnce(ok());
     await refreshTokens({ refreshToken: "old-refresh", clientId: CLIENT_ID, clientSecret: CLIENT_SECRET });
-    expect(contentTypes()).toEqual(["application/json", "application/x-www-form-urlencoded"]);
-    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toMatchObject({
-      grant_type: "refresh_token",
-      scope: "offline",
-    });
+    expect(contentTypes()).toEqual(["application/x-www-form-urlencoded", "application/json"]);
+    const formBody = new URLSearchParams(String(fetchMock.mock.calls[0][1]?.body));
+    expect(formBody.get("grant_type")).toBe("refresh_token");
+    expect(formBody.get("scope")).toBe("offline");
+    expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toMatchObject({ grant_type: "refresh_token" });
   });
 
   it("does not retry on 401", async () => {
