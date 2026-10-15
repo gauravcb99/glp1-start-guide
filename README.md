@@ -65,7 +65,7 @@ The full comparison is in [docs/methods-intervals.md](docs/methods-intervals.md)
 
 ## Placebo check on one real member
 
-On the author's own WHOOP data with a pretend first-dose date (23 injection weeks), the adjusted view found no clear days. The raw view found 5: resting heart rate on days 0, 2 and 4, and HRV and recovery on day 4, all from the author's usual weekly routine. Over the same period, the Since start view showed resting heart rate well below its pre-start usual for months, a larger shift than the label's whole 1 to 4 bpm range, with no drug involved.
+On the author's own WHOOP data with a pretend first-dose date (23 injection weeks), the adjusted view found no clear days. The raw view found 5: resting heart rate on days 0, 2 and 4, and HRV and recovery on day 4, all from the author's usual weekly routine. Over the same period, the Since first dose view showed resting heart rate well below its pre-start usual for months, a larger shift than the label's whole 1 to 4 bpm range, with no drug involved.
 
 ## Known limits
 
