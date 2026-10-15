@@ -1,5 +1,5 @@
--- Step 0 (Prakhar's WHOOP export): physiological_cycles.csv to the same long daily table.
--- Mapping confirmed by Prakhar 2026-10-14. "Wake onset" is read as local clock time
+-- Step 0 (Gaurav's WHOOP export): physiological_cycles.csv to the same long daily table.
+-- Mapping confirmed by Gaurav 2026-10-14. "Wake onset" is read as local clock time
 -- (see the notebook for the evidence); export_checks confirms the date would be the same if it were UTC.
 CREATE OR REPLACE TABLE export_cycles AS
 SELECT

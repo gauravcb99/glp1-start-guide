@@ -1,6 +1,6 @@
 # Interval method for P(d): how it was chosen
 
-Decided by Prakhar, 2026-10-13. Config: `uncertaintyMethod.interval` in `src/config/analysis.ts`.
+Decided by Gaurav, 2026-10-13. Config: `uncertaintyMethod.interval` in `src/config/analysis.ts`.
 
 ## The problem
 

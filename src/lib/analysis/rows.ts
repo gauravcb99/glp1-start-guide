@@ -16,5 +16,5 @@ export function metricValues(rows: DailyRow[], metric: Metric, cfg: AnalysisConf
 }
 
 export function notImplemented(option: string): Error {
-  return new Error(`Analysis option ${option} is not implemented; its meaning needs Prakhar's definition.`);
+  return new Error(`Analysis option ${option} is not implemented; its meaning needs Gaurav's definition.`);
 }

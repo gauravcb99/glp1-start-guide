@@ -35,7 +35,7 @@ export type PersonaSpec = {
 
 /**
  * Synthetic persona generation and self-test parameters. All start as null.
- * Prakhar sets these; code must never pick a default. Use requireConfig().
+ * Gaurav sets these; code must never pick a default. Use requireConfig().
  */
 export type PersonaConfig = {
   /** Each persona's history starts on the first day on or after this date that falls on its injection weekday. */
@@ -65,7 +65,7 @@ export type PersonaConfig = {
   personas: Record<PersonaId, PersonaSpec> | null;
 };
 
-// All values below set by Prakhar, 2026-10-12. They are synthetic and illustrative:
+// All values below set by Gaurav, 2026-10-12. They are synthetic and illustrative:
 // chosen to exercise the analysis, not taken from any real member or trial.
 
 const SEMAGLUTIDE_STEPS = { everyWeeks: 4, mg: [0.25, 0.5, 1, 1.7, 2.4] };
@@ -82,7 +82,7 @@ export const personaConfig: PersonaConfig = {
   placeboStartOffsetWeeks: 14,
   maxFalsePatternRate: 0.1,
   recoveryToleranceNoiseSdMultiple: 1.0,
-  mdeSeedCount: 2000, // set by Prakhar 2026-10-13: converged figure (100 runs read 8-26% high)
+  mdeSeedCount: 2000, // set by Gaurav 2026-10-13: converged figure (100 runs read 8-26% high)
   personas: {
     // Planted pattern.
     A: {

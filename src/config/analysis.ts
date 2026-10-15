@@ -2,7 +2,7 @@ import type { Metric } from "@/lib/analysis/types";
 
 /**
  * Every value that changes analysis results. All start as null.
- * Prakhar sets these; code must never pick a default. Use requireConfig().
+ * Gaurav sets these; code must never pick a default. Use requireConfig().
  * Option meanings: see "Fill the config" in PROMPTS.md.
  */
 export type AnalysisConfig = {
@@ -64,7 +64,7 @@ export type AnalysisConfig = {
   historyDaysToFetch: number | null;
 };
 
-// All values below set by Prakhar, 2026-10-12.
+// All values below set by Gaurav, 2026-10-12.
 export const analysisConfig: AnalysisConfig = {
   preDrugWindow: { kind: "lastWeeks", weeks: 12 },
   minPreDrugWeeksPerWeekday: 6,
@@ -79,7 +79,7 @@ export const analysisConfig: AnalysisConfig = {
   calibratingRule: "exclude",
   // The bootstrap resamples whole injection weeks AND pre-drug weeks, so the error in the
   // pre-drug weekday means (shared by every cycle, since d and weekday are aligned) is carried through.
-  // interval chosen by Prakhar 2026-10-13, for both the 95% bands and the decision interval.
+  // interval chosen by Gaurav 2026-10-13, for both the 95% bands and the decision interval.
   // Percentile gave false-pattern rates of 14/100 (null) and 31/100 (placebo); Welch–Satterthwaite
   // reached the 0.10 limit at 8 placebo cycles, and the app allows as few as minCycles = 6.
   // A false "clear pattern" is worse than a missed one. Comparison: docs/methods-intervals.md.

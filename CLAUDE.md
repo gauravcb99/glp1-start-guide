@@ -2,20 +2,20 @@
 
 A Next.js web app that shows how a WHOOP member's resting heart rate, HRV, recovery and sleep move across each weekly GLP-1 injection cycle (semaglutide or tirzepatide), adjusted for the member's own weekly rhythm before the drug. It is a portfolio piece for a Business Analyst role on WHOOP's healthcare product team, so correctness, honesty about uncertainty, and clean analysis code matter more than visual flash.
 
-Owner: Prakhar (pharmacist, health informatics). Build phases and acceptance checks are in `PROMPTS.md`.
+Owner: Gaurav (pharmacist, health informatics). Build phases and acceptance checks are in `PROMPTS.md`.
 
 Next.js version-specific guidance: see AGENTS.md.
 
 ## Hard rules (never break these)
 
-1. **Never hardcode or guess analysis parameters.** Every value that changes results lives in `src/config/analysis.ts` or `src/config/personas.ts` and starts as `null`. If you need a value that isn't set, stop and ask Prakhar. Do not pick a "reasonable default."
+1. **Never hardcode or guess analysis parameters.** Every value that changes results lives in `src/config/analysis.ts` or `src/config/personas.ts` and starts as `null`. If you need a value that isn't set, stop and ask Gaurav. Do not pick a "reasonable default."
 2. **No storage of WHOOP data.** No database, no files, no KV, no server cache beyond the single request. The browser may hold fetched rows in memory (React state) for the session to draw charts; never in localStorage, sessionStorage, IndexedDB or cookies, and they are gone on reload. Every fetch to WHOOP uses `cache: 'no-store'`; routes that touch WHOOP export `dynamic = 'force-dynamic'` and respond with `Cache-Control: no-store`. WHOOP's API terms forbid databases or permanent copies of WHOOP data.
 3. **Never log WHOOP response bodies or tokens.** Log status codes and endpoint names only.
 4. **Client secret stays server-side.** Read `WHOOP_CLIENT_SECRET` only in route handlers or server-only modules. Never prefix it with `NEXT_PUBLIC_`.
-5. **No AI service receives member data from the app.** The app never sends member data to any AI service. You (Claude Code) must not call `/api/whoop/days` or open `/debug`. Prakhar has allowed Claude Code to read his own export in `notebook/data/export/` for the notebook. Nothing from the export is committed (gitignore plus nbstripout), and nothing from it is copied into `src/`, tests or fixtures.
+5. **No AI service receives member data from the app.** The app never sends member data to any AI service. You (Claude Code) must not call `/api/whoop/days` or open `/debug`. Gaurav has allowed Claude Code to read his own export in `notebook/data/export/` for the notebook. Nothing from the export is committed (gitignore plus nbstripout), and nothing from it is copied into `src/`, tests or fixtures.
 6. **Wellness wording only.** All user-facing text lives in `src/copy/strings.ts`. A test fails on banned phrasing (see "Wording"). No cause-and-effect claims, no dosing advice, no "normal/abnormal/safe/dangerous."
 7. **Synthetic data is always labeled.** Every screen showing a demo member shows a "Synthetic member" badge. Synthetic files live only under `src/data/personas/` and `notebook/data/synthetic/`, and each includes `"synthetic": true`.
-8. **Don't invent facts.** If a WHOOP field name, CSV column or library API is uncertain, check the docs or the installed package and ask rather than assume. If anything here conflicts with the WHOOP docs, stop and tell Prakhar.
+8. **Don't invent facts.** If a WHOOP field name, CSV column or library API is uncertain, check the docs or the installed package and ask rather than assume. If anything here conflicts with the WHOOP docs, stop and tell Gaurav.
 
 ## Stack
 
@@ -55,8 +55,8 @@ src/
     analysis/summary.ts       plain-language result using copy strings
     session.ts
   config/
-    analysis.ts               AnalysisConfig, every value null until Prakhar sets it
-    personas.ts               PersonaConfig, every value null until Prakhar sets it
+    analysis.ts               AnalysisConfig, every value null until Gaurav sets it
+    personas.ts               PersonaConfig, every value null until Gaurav sets it
     errors.ts                 ConfigNotSetError, requireConfig()
   copy/strings.ts             every user-facing string
   data/
@@ -69,7 +69,7 @@ notebook/
   analysis.ipynb
   sql/                        .sql files used by the notebook
   data/synthetic/             generated CSVs, inputs JSON, engine results
-  data/export/                Prakhar's own WHOOP export (gitignored)
+  data/export/                Gaurav's own WHOOP export (gitignored)
 tests/
 ```
 

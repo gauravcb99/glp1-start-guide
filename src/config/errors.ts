@@ -2,7 +2,7 @@ export class ConfigNotSetError extends Error {
   readonly key: string;
 
   constructor(key: string) {
-    super(`Config value "${key}" is not set. Ask Prakhar to set it; do not pick a default.`);
+    super(`Config value "${key}" is not set. Ask Gaurav to set it; do not pick a default.`);
     this.name = "ConfigNotSetError";
     this.key = key;
   }
