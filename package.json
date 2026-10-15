@@ -10,7 +10,8 @@
     "test": "vitest run",
     "personas": "tsx scripts/generate-personas.ts",
     "export-results": "tsx scripts/export-engine-results.ts",
-    "method-results": "tsx scripts/method-results.ts"
+    "method-results": "tsx scripts/method-results.ts",
+    "readme": "tsx scripts/readme-results.ts"
   },
   "dependencies": {
     "iron-session": "^9.0.1",

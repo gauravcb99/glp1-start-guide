@@ -37,7 +37,7 @@ export default function DemoPage() {
             </span>
             <h2 className="font-medium">{d.personas[id].title}</h2>
             <p className="text-sm text-secondary">{body(id)}</p>
-            <span className="mt-auto text-sm font-medium text-series">{d.open}</span>
+            <span className="mt-auto text-sm font-medium text-foreground">{d.open}</span>
           </Link>
         ))}
       </div>

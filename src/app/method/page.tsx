@@ -1,40 +1,16 @@
 // Method and limits. Every result shown here is read from src/data/methodResults.json, which
 // `npm run method-results` generates with the real engine and config on synthetic members.
+// The README shows the same lines and table (scripts/readme-results.ts).
 import { strings } from "@/copy/strings";
 import { labelRanges, whoopStudy } from "@/data/labelRanges";
 import results from "@/data/methodResults.json";
+import { mdeTable, selfTestLines } from "@/lib/methodResults";
 
 const m = strings.method;
 
 export default function MethodPage() {
-  const { selfTests, mde, maxFalsePatternRate } = results;
-  const maxPct = Math.round(maxFalsePatternRate * 100);
-  const worst = Math.max(...selfTests.planted.map((p) => p.maxErrorInNoiseSd));
-  const tolerance = selfTests.planted[0].toleranceInNoiseSd;
-
-  const tests = [
-    { text: m.selfTests.planted(worst.toFixed(2), tolerance.toFixed(1)), pass: worst <= tolerance },
-    {
-      text: m.selfTests.null(selfTests.null.clear, selfTests.null.runs, maxPct),
-      pass: selfTests.null.clear / selfTests.null.runs <= maxFalsePatternRate,
-    },
-    {
-      text: m.selfTests.placebo(selfTests.placebo.clear, selfTests.placebo.runs, maxPct),
-      pass: selfTests.placebo.clear / selfTests.placebo.runs <= maxFalsePatternRate,
-    },
-    {
-      text: m.selfTests.trap(
-        selfTests.weekdayTrap.habitD,
-        selfTests.weekdayTrap.rawClearAtHabitDay,
-        selfTests.weekdayTrap.adjustedClear,
-      ),
-      pass: selfTests.weekdayTrap.rawClearAtHabitDay && !selfTests.weekdayTrap.adjustedClear,
-    },
-  ];
-
-  const cycles = Math.round(mde.rows[0].cycles);
-  const preWeeks = Math.round(mde.rows[0].preWeeks);
-  const fmt = (v: number, unit: string) => `${v.toFixed(1)} ${unit}`;
+  const tests = selfTestLines(results);
+  const table = mdeTable(results);
 
   const sources = [
     { name: labelRanges.tirzepatide.hrSourceName, url: labelRanges.tirzepatide.hrSourceUrl },
@@ -66,7 +42,7 @@ export default function MethodPage() {
             <li key={t.text} className="flex gap-3">
               <span
                 className={`mt-0.5 h-fit shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-                  t.pass ? "bg-green-600/20 text-green-500" : "bg-red-600/20 text-red-500"
+                  t.pass ? "bg-green-600/20 text-green-800 dark:text-green-300" : "bg-red-600/20 text-red-800 dark:text-red-300"
                 }`}
               >
                 {t.pass ? m.selfTests.pass : m.selfTests.fail}
@@ -78,7 +54,7 @@ export default function MethodPage() {
       </Section>
 
       <Section title={m.mdeTitle}>
-        <p className="text-secondary">{m.mdeIntro(mde.runs, cycles, preWeeks)}</p>
+        <p className="text-secondary">{table.intro}</p>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="text-muted">
@@ -90,17 +66,14 @@ export default function MethodPage() {
               </tr>
             </thead>
             <tbody>
-              {mde.rows.map((row) => {
-                const metric = strings.metrics[row.metric as keyof typeof strings.metrics];
-                return (
-                  <tr key={row.metric} className="border-b border-border">
-                    <td className="py-2 pr-4">{metric.name}</td>
-                    <td className="py-2 pr-4 tabular-nums">{fmt(row.noiseSd, metric.sentenceUnit)}</td>
-                    <td className="py-2 pr-4 tabular-nums">{fmt(row.mde50, metric.sentenceUnit)}</td>
-                    <td className="py-2 tabular-nums">{fmt(row.mde80, metric.sentenceUnit)}</td>
-                  </tr>
-                );
-              })}
+              {table.rows.map((row) => (
+                <tr key={row.metric} className="border-b border-border">
+                  <td className="py-2 pr-4">{row.name}</td>
+                  <td className="py-2 pr-4 tabular-nums">{row.noise}</td>
+                  <td className="py-2 pr-4 tabular-nums">{row.half}</td>
+                  <td className="py-2 tabular-nums">{row.most}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

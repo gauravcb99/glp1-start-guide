@@ -56,6 +56,12 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+/* A visible keyboard focus ring in both themes (series blue is at least 4.4:1 on the background). */
+:focus-visible {
+  outline: 2px solid var(--series-1);
+  outline-offset: 2px;
+}
+
 /* Native form controls follow the theme (date pickers, select menus), and empty or placeholder
    text stays readable on the dark background. */
 input,
@@ -70,4 +76,19 @@ textarea::placeholder {
 }
 input[type="date"]::-webkit-datetime-edit-fields-wrapper {
   color: var(--text-secondary);
+}
+
+/* Print: Recharts sizes its SVG in pixels from the screen layout, and the page reflows to the paper
+   width before the size updates, so charts overflowed their cards. Scale each chart to its card
+   through the SVG viewBox instead, and keep cards whole across pages. */
+@media print {
+  /* ResponsiveContainer wraps the chart in a 0x0 div with overflow visible; size both to the card. */
+  .recharts-responsive-container > div,
+  .recharts-wrapper {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  section {
+    break-inside: avoid;
+  }
 }

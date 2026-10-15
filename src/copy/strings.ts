@@ -37,7 +37,7 @@ export const strings = {
 
   nav: {
     week: "Week",
-    since: "Since start",
+    since: "Since first dose",
     method: "Method",
     setup: "Setup",
     exitDemo: "Exit demo",
@@ -110,6 +110,7 @@ export const strings = {
     intro: "How each morning after your injection compares with the rest of that week.",
     toggleAdjusted: "Adjusted for your usual week",
     toggleRaw: "Raw",
+    toggleLabel: "View",
     relativeNote:
       "The shape is relative to your own weekly average, so the seven days balance out to zero. It shows when in the week things move, not your overall level.",
     adjustedNote: "Adjusted: each morning is compared with your usual for that weekday before you started.",
@@ -122,7 +123,7 @@ export const strings = {
           : "Day 0 is the morning of your injection day, before the evening dose.",
     cycles: (n: number) => `Based on ${n} injection weeks.`,
     clearExplainer: (days: number, metrics: number, levelPct: string) =>
-      `"Clear" uses a stricter test than the 95% band: it allows for checking ${days} days across ${metrics} metrics (${levelPct}% level).`,
+      `A day is marked "clear" only if it passes a stricter test than the 95% band, to allow for ${days * metrics} checks at once (${days} days × ${metrics} metrics, ${levelPct}% level).`,
     legend: "Dot: average for that day. Bar: 95% band. Filled dot: clear. Dashed line: your weekly average.",
     dayLabel: (d: number) => `Day ${d}`,
     clearMark: "clear",
@@ -134,6 +135,16 @@ export const strings = {
       notClear: "Not clear",
     },
     summaryTitle: "Summary",
+    heading: (unit: string) => `${unit} vs your weekly average`,
+    table: {
+      caption: (metricName: string) => `${metricName} by day since injection`,
+      day: "Day",
+      average: "Average",
+      band: "95% band",
+      clear: "Clear",
+      yes: "Yes",
+      no: "No",
+    },
   },
 
   summary: {
@@ -150,13 +161,17 @@ export const strings = {
   since: {
     title: "Since your first dose",
     intro: (days: number) =>
-      `Your ${days}-day rolling level compared with your usual for those weekdays before you started. Zero means the same as your pre-drug usual.`,
+      `Your ${days}-day average compared with your usual before you started, matched by weekday. Zero means no change from your usual.`,
+    otherChanges:
+      "Changes here can also come from anything else that changed since your start date, such as season, training or sleep habits.",
     beforeFirstDose: "before first dose",
     afterFirstDose: "since first dose",
     legend: "Gray: before first dose. Blue: since first dose. Dashed line: your pre-drug usual.",
     doseStep: (mg: number) => `${mg} mg`,
     doseStepsNote: "Dashed lines mark each dose step.",
-    yAxis: (unit: string) => `vs usual (${unit})`,
+    heading: (unit: string) => `${unit} vs your usual`,
+    latestLevel: (metricName: string, date: string, value: string) =>
+      `${metricName}: latest rolling level on ${date} is ${value} compared with your usual.`,
     labelBand: (low: number, high: number) =>
       `The drug label reports an average resting heart rate increase of ${low} to ${high} bpm across trial participants. The shaded band shows that range. It is a trial average, not a target for you.`,
     labelSource: "Source:",
@@ -225,7 +240,7 @@ export const strings = {
       "The analysis is checked on synthetic members whose answers are known in advance. These results are computed by the app's own code.",
     selfTests: {
       planted: (worst: string, tolerance: string) =>
-        `Planted pattern: on Member A, the recovered shape is within ${worst} noise units of the planted one on its worst day (allowed: ${tolerance}).`,
+        `Planted pattern: on Member A, the recovered shape is within ${worst} × the day-to-day noise of the planted one on its worst day (allowed: ${tolerance} ×).`,
       null: (clear: number, runs: number, maxPct: number) =>
         `No effect: Member B showed a clear pattern in ${clear} of ${runs} simulated runs (allowed: up to ${maxPct}%).`,
       placebo: (clear: number, runs: number, maxPct: number) =>

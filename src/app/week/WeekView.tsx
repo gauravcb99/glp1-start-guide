@@ -45,7 +45,7 @@ function WeekBody({ data }: { data: ReadyData }) {
         <p className="text-secondary">{w.intro}</p>
       </header>
 
-      <div role="group" aria-label="View" className="inline-flex w-fit rounded-full border border-border p-1 text-sm">
+      <div role="group" aria-label={w.toggleLabel} className="inline-flex w-fit rounded-full border border-border p-1 text-sm">
         {(["adjusted", "raw"] as const).map((v) => (
           <button
             key={v}
@@ -110,11 +110,11 @@ function PageState({ analysis, children }: { analysis: WeekAnalysis; children: R
 }
 
 function MetricCard({ profile }: { profile: Profile }) {
-  const { name, unit } = strings.metrics[profile.metric];
+  const { name, sentenceUnit } = strings.metrics[profile.metric];
   return (
     <section className="rounded-xl border border-border px-4 pb-2 pt-4">
       <h2 className="font-medium">
-        {name} <span className="text-sm font-normal text-muted">({unit})</span>
+        {name} <span className="text-sm font-normal text-muted">({w.heading(sentenceUnit)})</span>
       </h2>
       {profile.status === "ok" ? (
         <WeekChart profile={profile} />

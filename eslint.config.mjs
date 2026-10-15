@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The notebook's Python virtualenv (ships third-party JS).
+    ".venv/**",
   ]),
 ]);
 

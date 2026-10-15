@@ -33,6 +33,7 @@ function SinceBody({ data }: { data: ReadyData }) {
     <header className="flex flex-col gap-2">
       <h1 className="text-2xl font-semibold tracking-tight">{s.title}</h1>
       <p className="text-secondary">{s.intro(cfg.rollingWindowDays!)}</p>
+      <p className="text-sm text-secondary">{s.otherChanges}</p>
     </header>
   );
 
@@ -58,12 +59,12 @@ function SinceBody({ data }: { data: ReadyData }) {
 
       <div className="flex flex-col gap-6">
         {views.map(({ metric, post, pre }) => {
-          const { name, unit } = strings.metrics[metric];
+          const { name, sentenceUnit } = strings.metrics[metric];
           const isRestingHr = metric === "restingHr";
           return (
             <section key={metric} className="rounded-xl border border-border px-4 pb-3 pt-4">
               <h2 className="font-medium">
-                {name} <span className="text-sm font-normal text-muted">({s.yAxis(unit)})</span>
+                {name} <span className="text-sm font-normal text-muted">({s.heading(sentenceUnit)})</span>
               </h2>
               {post.status === "ok" ? (
                 <SinceChart
